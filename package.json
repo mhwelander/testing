@@ -1,0 +1,25 @@
+{
+  "name": "typegraph-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "tsc && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^2.0.0-preview022",
+    "@types/graphql": "^14.5.0",
+    "@types/ws": "^7.2.2",
+    "graphql": "^14.6.0",
+    "graphql-yoga": "^1.18.3",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^0.17.6",
+    "typedi": "^0.8.0"
+  },
+  "devDependencies": {
+    "prisma2": "^2.0.0-preview022"
+  }
+}
