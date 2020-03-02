@@ -18,16 +18,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const tq = __importStar(require("type-graphql"));
-const rs = __importStar(require("./postresolvers"));
+const rs = __importStar(require("./resolvers"));
+const graphql_1 = require("graphql");
 const typedi_1 = require("typedi");
 const graphql_yoga_1 = require("graphql-yoga");
 const client_1 = require("@prisma/client");
+const context_1 = require("./context");
 const app = () => __awaiter(void 0, void 0, void 0, function* () {
-    typedi_1.Container.set("prismaClient", new client_1.PrismaClient()); // TODO: Do I need to manage the connection?
+    typedi_1.Container.set("prismaClient", new client_1.PrismaClient()); // QUESTION: Should I instantiate a new client inside each resolver instead?
     const schema = yield tq.buildSchema({
-        resolvers: [rs.PostResolver],
+        resolvers: [rs.PostResolver, rs.UserResolver],
         container: typedi_1.Container
     });
-    new graphql_yoga_1.GraphQLServer({ schema }).start(() => console.log(`🚀 Server ready at: http://localhost:4000\n⭐️ See sample queries: http://pris.ly/e/ts/graphql#3-using-the-graphql-api`));
+    const context = context_1.createContext();
+    console.log(graphql_1.printSchema(schema));
+    new graphql_yoga_1.GraphQLServer({ schema, context }).start(() => console.log(`🚀 Server ready at: http://localhost:4000\n⭐️ See sample queries: http://pris.ly/e/ts/graphql#3-using-the-graphql-api`));
 });
 app();

@@ -1,21 +1,19 @@
 import "reflect-metadata";
 import * as tq from "type-graphql"
-import * as rs from "./postresolvers"
+import * as rs from "./resolvers"
 import { introspectionQuery, printSchema } from 'graphql';
-import { Container } from "typedi";
 import { GraphQLServer } from 'graphql-yoga'
-import { PrismaClient } from "@prisma/client";
+import { createContext } from "./context";
 
 const app = async () => {
-    
-    Container.set("prismaClient", new PrismaClient()); // QUESTION: Should I instantiate a new client inside each resolver instead?
 
     const schema = await tq.buildSchema({
-        resolvers: [rs.PostResolver],
-        container: Container
+        resolvers: [rs.PostResolver, rs.UserResolver]
     });
 
-    new GraphQLServer({ schema }).start(() =>
+    const context = createContext();
+
+    new GraphQLServer({ schema, context }).start(() =>
         console.log(
             `🚀 Server ready at: http://localhost:4000\n⭐️ See sample queries: http://pris.ly/e/ts/graphql#3-using-the-graphql-api`,
         ),

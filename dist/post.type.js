@@ -15,13 +15,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const tq = __importStar(require("type-graphql"));
-const user_type_1 = __importDefault(require("./user.type"));
+const cv = __importStar(require("class-validator"));
+const user_type_1 = require("./user.type");
 let Post = class Post {
 };
 __decorate([
@@ -42,8 +40,8 @@ __decorate([
     __metadata("design:type", Object)
 ], Post.prototype, "published", void 0);
 __decorate([
-    tq.Field(type => user_type_1.default, { nullable: true }),
-    __metadata("design:type", user_type_1.default)
+    tq.Field(type => user_type_1.User, { nullable: true }),
+    __metadata("design:type", Object)
 ], Post.prototype, "author", void 0);
 Post = __decorate([
     tq.ObjectType()
@@ -51,7 +49,7 @@ Post = __decorate([
 exports.Post = Post;
 let PostCreateInput = class PostCreateInput {
     constructor() {
-        this.published = false; // Defaults to false
+        this.published = false;
     }
 };
 __decorate([
@@ -66,6 +64,11 @@ __decorate([
     tq.Field(type => Boolean, { nullable: true }),
     __metadata("design:type", Object)
 ], PostCreateInput.prototype, "published", void 0);
+__decorate([
+    tq.Field(type => String, { nullable: true }),
+    cv.IsEmail(),
+    __metadata("design:type", Object)
+], PostCreateInput.prototype, "email", void 0);
 PostCreateInput = __decorate([
     tq.InputType()
 ], PostCreateInput);

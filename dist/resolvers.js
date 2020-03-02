@@ -28,12 +28,11 @@ const user_type_1 = require("./user.type");
 let UserResolver = class UserResolver {
     posts(user, ctx) {
         return __awaiter(this, void 0, void 0, function* () {
-            var x = (yield ctx.prisma.user.findOne({
+            return (yield ctx.prisma.user.findOne({
                 where: {
                     id: user.id
                 }
             }).post());
-            return x;
         });
     }
     user(id, ctx) {

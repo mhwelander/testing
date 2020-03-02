@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import * as tq from "type-graphql"
 import * as cv from "class-validator"
-import User from "./user.type"
+import { User } from "./user.type"
 
 @tq.ObjectType()
 export class Post {
@@ -20,7 +20,7 @@ export class Post {
   published?: boolean | null;  
 
   @tq.Field(type => User, {nullable: true})
-  author?: User;
+  author?: User | null;
 }
 
 @tq.InputType()
@@ -33,11 +33,9 @@ export class PostCreateInput {
   content: string | null;
 
   @tq.Field(type => Boolean, { nullable: true })
-  published?: boolean | null = false; // Defaults to false
+  published?: boolean | null = false;
 
-  @tq.Field()
-  @cv.IsEmail() // 
-  email: string;
-  
-  // TODO: Add user -- via e-mail?
+  @tq.Field(type => String, { nullable: true})
+  @cv.IsEmail()
+  email: string | null;
 }

@@ -32,14 +32,29 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    tq.Field({ nullable: true }),
-    __metadata("design:type", String)
+    tq.Field(type => String, { nullable: true }),
+    __metadata("design:type", Object)
 ], User.prototype, "name", void 0);
 __decorate([
-    tq.Field(type => [post_type_1.Post]),
-    __metadata("design:type", Array)
+    tq.Field(type => [post_type_1.Post], { nullable: true }),
+    __metadata("design:type", Object)
 ], User.prototype, "posts", void 0);
 User = __decorate([
     tq.ObjectType()
 ], User);
-exports.default = User;
+exports.User = User;
+let UserCreateInput = class UserCreateInput {
+};
+__decorate([
+    tq.Field(),
+    cv.IsEmail(),
+    __metadata("design:type", String)
+], UserCreateInput.prototype, "email", void 0);
+__decorate([
+    tq.Field(type => String, { nullable: true }),
+    __metadata("design:type", Object)
+], UserCreateInput.prototype, "name", void 0);
+UserCreateInput = __decorate([
+    tq.InputType()
+], UserCreateInput);
+exports.UserCreateInput = UserCreateInput;
