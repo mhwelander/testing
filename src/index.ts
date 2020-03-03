@@ -1,14 +1,14 @@
 import "reflect-metadata";
 import * as tq from "type-graphql"
-import * as rs from "./resolvers"
-import { introspectionQuery, printSchema } from 'graphql';
+import { PostResolvers } from "./PostResolvers"
+import  { UserResolvers } from "./UserResolvers"
 import { GraphQLServer } from 'graphql-yoga'
 import { createContext } from "./context";
 
 const app = async () => {
 
     const schema = await tq.buildSchema({
-        resolvers: [rs.PostResolver, rs.UserResolver]
+        resolvers: [PostResolvers, UserResolvers]
     });
 
     const context = createContext();

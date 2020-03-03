@@ -1,18 +1,16 @@
 import "reflect-metadata";
-import { Resolver, Query, Mutation, Arg, Args, Authorized, Ctx } from "type-graphql"
-import { PrismaClient } from '@prisma/client'
-import { Service } from "typedi"
-import { Post, PostCreateInput } from "./post.type";
+import { Resolver, Query, Mutation, Arg, Args, Authorized, Ctx, FieldResolver, Root } from "type-graphql"
+import { Post, PostCreateInput } from "./Post";
+import { User, UserCreateInput } from "./User";
+import { Context } from "./context";
 
-@Service()
 @Resolver(Post)
-export class PostResolver {
-  constructor(private prismaClient: PrismaClient) { }
+export class PostResolvers {
 
   @Query(returns => Post)
-  async post(@Arg("id") id: number) {
+  async post(@Arg("id") id: number, @Ctx() ctx: Context) {
     try {
-      var post = await this.prismaClient.post.findOne({
+      const post = await ctx.prisma.post.findOne({
         where:
           { id: id }
       });
@@ -22,45 +20,106 @@ export class PostResolver {
     catch (error) {
       throw error;
     }
-    finally {
-      await this.prismaClient.disconnect(); // QUESTION: Required?
+  }
+
+
+  @Query(returns => [Post])
+  async filterPosts(@Arg("searchQuery") searchQuery: string, @Ctx() ctx: Context
+  ) {
+    try {
+      const posts = await ctx.prisma.post.findMany({
+        where: {
+          OR: [
+            { title: { contains: searchQuery } },
+            { content: { contains: searchQuery } },
+          ]
+        }
+      });
+
+      return posts;
+    }
+    catch (error) {
+      throw error;
     }
   }
 
+  @FieldResolver()
+  async author(@Root() post: Post, @Ctx() ctx: Context): Promise<User> {
+    return (await ctx.prisma.post.findOne({
+      where: {
+        id: post.id
+      }
+    }).author())!;
+  }
+
+
+  @Query(returns => [Post])
+  async feed(@Ctx() ctx: Context) {
+    try {
+      const posts = await ctx.prisma.post.findMany({
+        where: {
+          published: true
+        }
+      });
+
+      return posts;
+    }
+    catch (error) {
+      throw error;
+    }
+  }
+
+
   @Mutation(returns => Post)
-  async addPost(
-    @Arg("newPostData") newPostData: PostCreateInput
+  async createDraft(
+    @Arg("data") data: PostCreateInput, @Ctx() ctx: Context
   ): Promise<Post> {
     try {
-      return await this.prismaClient.post.create({
+      return await ctx.prisma.post.create({
         data: {
-          title: newPostData.title,
-          content: newPostData.content
+          title: data.title,
+          content: data.content,
+          author: {
+            connect: { email: data.email }
+          }
         }
       });
     }
     catch (error) {
       throw error;
     }
-    finally {
-      await this.prismaClient.disconnect(); // QUESTION: Required?
-    }
   }
 
-  /* @Query(returns => [Recipe])
-  recipes(@Args() { skip, take }: RecipesArgs) {
-    return this.recipeService.findAll({ skip, take });
-  }
-
-
-
-  @Mutation(returns => Boolean)
-  async removeRecipe(@Arg("id") id: string) {
+  @Mutation(returns => Post)
+  async publish(
+    @Arg("id") id: number, @Ctx() ctx: Context
+  ): Promise<Post> {
     try {
-      await this.recipeService.removeById(id);
-      return true;
-    } catch {
-      return false;
+      return await ctx.prisma.post.update({
+        where: {
+          id: id
+        },
+        data: {
+          published: true
+        }
+      });
     }
-  } */
+    catch (error) {
+      throw error;
+    }
+  }
+
+  @Mutation(returns => Post)
+  async deleteOnePost(@Arg("id") id: number, @Ctx() ctx: Context): Promise<Post> {
+    try {
+      return await ctx.prisma.post.delete({
+        where: {
+          id: id
+        }
+      });
+    }
+    catch (error) {
+      throw error;
+    }
+  }
 }
